@@ -1,0 +1,27 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: task-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/taskdb
+    username: ${TASK_DB_USER:root}
+    password: ${TASK_DB_PASS:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+team-service:
+  url: http://localhost:8082
