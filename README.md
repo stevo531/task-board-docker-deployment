@@ -51,26 +51,6 @@ The Gateway is the single entry point — the frontend never calls backend servi
 Task Service calls Team Service synchronously to validate member assignments.
 Events (task assigned, completed, status changed) flow asynchronously through RabbitMQ.
 
-## Quick start
-
-```bash
-# Prerequisites: Java 17+, Maven 3.8+, MySQL 8.0+, RabbitMQ 3.x+
-mvn clean install -DskipTests
-
-# Start in this order (separate terminals):
-cd services/team-service       && mvn spring-boot:run   # port 8082
-cd services/task-service       && mvn spring-boot:run   # port 8081
-cd services/notification-service && mvn spring-boot:run # port 8083
-cd services/api-gateway        && mvn spring-boot:run   # port 8080
-
-# Verify:
-curl http://localhost:8080/api/teams    # []
-curl http://localhost:8080/api/tasks    # []
-```
-
-Full startup guide with database setup: `docs/requirements.md`.  
-API contracts with example requests: `docs/api-contracts.md`.  
-Interactive Swagger UI at `/swagger-ui.html` on each service port.
 
 ## Project structure
 
@@ -87,13 +67,35 @@ task-board-platform/
 └── CHALLENGE.md                  # Infrastructure challenges (group project)
 ```
 
+
+## Quick start
+
+See [docs/requirements.md](./docs/requirements.md) for the full startup guide covering prerequisites, database setup, environment variables, and running the frontend.
+
+**TL;DR** — once prerequisites are installed and databases are created:
+
+```bash
+# 1. Build all services (from repo root)
+mvn clean install -DskipTests
+
+# 2. Start backend services in order (separate terminals)
+cd services/team-service         && mvn spring-boot:run   # :8082
+cd services/task-service         && mvn spring-boot:run   # :8081
+cd services/notification-service && mvn spring-boot:run   # :8083
+cd services/api-gateway          && mvn spring-boot:run   # :8080
+
+# 3. Start the frontend
+cd frontend && pnpm install && pnpm dev                   # :3000
+```
+
 ## Documentation
 
 | File | What it covers |
 |------|---------------|
-| `services/README.md` | Backend services: tech stack, ports, dependencies, configuration |
-| `frontend/README.md` | Frontend architecture: stores, repositories, proxy, pages |
-| `docs/architecture.md` | Deep dive: communication patterns, event system, database strategy |
-| `docs/api-contracts.md` | Complete API reference with request/response examples |
-| `docs/requirements.md` | Prerequisites, database setup, environment configuration |
-| `CHALLENGE.md` | Infrastructure challenges for containerisation, K8s, observability |
+| [services/README.md](./services/README.md) | Backend services: tech stack, ports, dependencies, configuration |
+| [frontend/README.md](./frontend/README.md) | Frontend architecture: stores, repositories, proxy, pages |
+| [docs/architecture.md](./docs/architecture.md) | Deep dive: communication patterns, event system, database strategy |
+| [docs/api-contracts.md](./docs/api-contracts.md) | Complete API reference with request/response examples |
+| [docs/requirements.md](./docs/requirements.md) | Prerequisites, database setup, environment configuration |
+| [CHALLENGE.md](./CHALLENGE.md) | Infrastructure challenges for containerisation, K8s, observability |
+ 
