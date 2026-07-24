@@ -12,4 +12,4 @@ Need a single-command mechanism to validate prerequisites, prepare databases, an
 2. **Native Bash Process Orchestration:** Selected for `start-local.sh` to meet bare-metal execution constraints.
 
 ### Decision
-Utilized a native Bash script (`infrastructure/scripts/start-local.sh`) that reads standard `.env` variables, initializes MySQL schemas, checks network readiness using curl, and manages background PIDs with an explicit `SIGINT` cleanup trap.
+Utilized a native Bash script (`infrastructure/scripts/start-local.sh`) that reads standard `.env` variables, initializes MySQL schemas, checks service readiness using `curl` against HTTp ports, and manages background PIDs with an explicit `SIGINT` `SIGTERM` and `EXIT` signals to clean up background PIDs.
