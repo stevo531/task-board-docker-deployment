@@ -15,10 +15,11 @@ FROM nginx:alpine
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=builder /app/public /usr/share/nginx/html
-COPY --from=builder /app/.next/static /usr/share/nginx/html/_next/static
+RUN mkdir -p /usr/share/nginx/html/_next
 
-COPY --from=builder /app/.next/standalone /usr/share/nginx/html 2>/dev/null || :
+RUN if [ -d /app/public ]; then cp -r /app/public/* /usr/share/nginx/html/; fi
+
+COPY --from=builder /app/.next/static /usr/share/nginx/html/_next/static
 
 EXPOSE 3000
 
