@@ -28,3 +28,9 @@ spring:
 logging:
   level:
     com.taskboard: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
