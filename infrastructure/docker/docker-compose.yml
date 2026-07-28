@@ -1,1 +1,17 @@
 # Task Board Platform - Docker Compose
+networks:
+  taskboard-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+services:
+  # Base placeholder for upcoming service definitions
+  placeholder:
+    image: alpine:latest
+    networks:
+      - taskboard-net
