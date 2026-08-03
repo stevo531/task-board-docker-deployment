@@ -1,4 +1,3 @@
-
 FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
 
 WORKDIR /build
@@ -12,10 +11,12 @@ COPY services/task-service/src ./services/task-service/src
 RUN mvn clean package spring-boot:repackage -DskipTests -f services/task-service/pom.xml -Dproject.build.outputTimestamp=2026-01-01T00:00:00Z
 
 WORKDIR /build/extracted
-RUN java -Djarmode=tools -jar /build/services/task-service/target/*.jar extract --layers
+# Updated to use layertools extract for compatible Spring Boot layer extraction
+RUN java -Djarmode=layertools -jar /build/services/task-service/target/*.jar extract
 
+# ADDED java.desktop TO THE --add-modules LIST BELOW:
 RUN $JAVA_HOME/bin/jlink \
-    --add-modules java.base,java.logging,java.net.http,java.sql,java.management,java.naming,java.security.jgss,java.instrument \
+    --add-modules java.base,java.logging,java.net.http,java.sql,java.management,java.naming,java.security.jgss,java.instrument,java.desktop \
     --strip-debug \
     --no-man-pages \
     --no-header-files \

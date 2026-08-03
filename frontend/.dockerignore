@@ -1,6 +1,7 @@
 node_modules
+**/node_modules
+.pnpm-store
 .next
-.git
-.DS_Store
 dist
-build
+.git
+*.log

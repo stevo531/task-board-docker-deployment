@@ -1,0 +1,6 @@
+frontend/node_modules
+.next
+.git
+.DS_Store
+dist
+build
