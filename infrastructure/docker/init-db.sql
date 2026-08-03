@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS taskdb;
+CREATE DATABASE IF NOT EXISTS teamdb;
+CREATE DATABASE IF NOT EXISTS notificationdb;
+
+GRANT ALL PRIVILEGES ON taskdb.* TO 'taskuser'@'%';
+GRANT ALL PRIVILEGES ON teamdb.* TO 'taskuser'@'%';
+GRANT ALL PRIVILEGES ON notificationdb.* TO 'taskuser'@'%';
+
+FLUSH PRIVILEGES;

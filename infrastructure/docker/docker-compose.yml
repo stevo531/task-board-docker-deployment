@@ -1,5 +1,4 @@
 # Task Board Platform - Docker Compose
-version: '3.8'
 
 networks:
   taskboard-net:
@@ -7,32 +6,35 @@ networks:
 
 volumes:
   mysql_data:
-    driver: local
   rabbitmq_data:
-    driver: local
 
 services:
   # ==========================================
-  # Infrastructure Services
+  # Infrastructure
   # ==========================================
   mysql:
     image: mysql:8.0
     container_name: mysql
     restart: unless-stopped
+
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
     ports:
       - "${MYSQL_PORT}:3306"
+
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+
     networks:
       - taskboard-net
+
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD","mysqladmin","ping","-h","localhost","-uroot","-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -42,18 +44,23 @@ services:
     image: rabbitmq:3.12-management-alpine
     container_name: rabbitmq
     restart: unless-stopped
+
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+
     ports:
       - "${RABBITMQ_PORT}:5672"
       - "${RABBITMQ_MGMT_PORT}:15672"
+
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+
     networks:
       - taskboard-net
+
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test: ["CMD","rabbitmq-diagnostics","-q","ping"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -62,29 +69,36 @@ services:
   # ==========================================
   # Backend Services
   # ==========================================
+
   task-service:
     build:
       context: ../..
       dockerfile: services/task-service/Dockerfile
+
     container_name: task-service
     restart: unless-stopped
+
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/taskdb?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_RABBITMQ_HOST: ${SPRING_RABBITMQ_HOST}
-      SPRING_RABBITMQ_PORT: ${SPRING_RABBITMQ_PORT}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+
     ports:
       - "${TASK_SERVICE_PORT}:8081"
+
     networks:
       - taskboard-net
+
     depends_on:
       mysql:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8081 || exit 1"]
+      test: ["CMD-SHELL","nc -z localhost 8081 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -94,21 +108,27 @@ services:
     build:
       context: ../..
       dockerfile: services/team-service/Dockerfile
+
     container_name: team-service
     restart: unless-stopped
+
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/teamdb?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+
     ports:
       - "${TEAM_SERVICE_PORT}:8082"
+
     networks:
       - taskboard-net
+
     depends_on:
       mysql:
         condition: service_healthy
+
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8082 || exit 1"]
+      test: ["CMD-SHELL","nc -z localhost 8082 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -118,25 +138,33 @@ services:
     build:
       context: ../..
       dockerfile: services/notification-service/Dockerfile
+
     container_name: notification-service
     restart: unless-stopped
+
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/notificationdb?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      SPRING_RABBITMQ_HOST: ${SPRING_RABBITMQ_HOST}
-      SPRING_RABBITMQ_PORT: ${SPRING_RABBITMQ_PORT}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS}
+
     ports:
       - "${NOTIFICATION_SERVICE_PORT}:8083"
+
     networks:
       - taskboard-net
+
     depends_on:
       mysql:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8083 || exit 1"]
+      test: ["CMD-SHELL","wget -q --spider http://localhost:8083/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -146,12 +174,16 @@ services:
     build:
       context: ../..
       dockerfile: services/api-gateway/Dockerfile
+
     container_name: api-gateway
     restart: unless-stopped
+
     ports:
       - "${GATEWAY_PORT}:8080"
+
     networks:
       - taskboard-net
+
     depends_on:
       task-service:
         condition: service_healthy
@@ -159,32 +191,42 @@ services:
         condition: service_healthy
       notification-service:
         condition: service_healthy
+
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"]
+      test: ["CMD-SHELL","nc -z localhost 8080 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
 
   # ==========================================
-  # Frontend Service
+  # Frontend
   # ==========================================
+
   frontend:
     build:
-      context: ../..
-      dockerfile: services/frontend/Dockerfile
+      context: ../../frontend
+      dockerfile: Dockerfile
+
     container_name: frontend
     restart: unless-stopped
+
+    environment:
+      NEXT_PUBLIC_API_URL: http://api-gateway:8080
+
     ports:
       - "${FRONTEND_PORT}:3000"
+
     networks:
       - taskboard-net
+
     depends_on:
       api-gateway:
         condition: service_healthy
+
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 3000 || wget -q --spider http://localhost:3000 || exit 1"]
-      interval: 10s
+      test: ["CMD-SHELL","wget -q --spider http://localhost:3000 || exit 1"]
+      interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 15s
+      start_period: 20s

@@ -3,12 +3,12 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ../../services/frontend
+      context: ../../frontend
       dockerfile: Dockerfile
       target: dev
     command: pnpm dev
     volumes:
-      - ../../services/frontend:/app
+      - ../../frontend:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
