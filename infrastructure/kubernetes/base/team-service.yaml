@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: team-service
+  namespace: taskboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: team-service
+  template:
+    metadata:
+      labels:
+        app: team-service
+    spec:
+      containers:
+        - name: team-service
+          image: docker-team-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql:3306/teamdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: team-service
+  namespace: taskboard
+spec:
+  selector:
+    app: team-service
+  ports:
+    - name: http
+      port: 8082
+      targetPort: 8082
