@@ -7,9 +7,9 @@ spring:
   config:
     import: optional:file:../.env[.properties]
   datasource:
-    url: jdbc:mysql://localhost:3306/taskdb
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/taskdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:taskuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:Manirampa20@}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -20,10 +20,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:taskuser}
+    password: ${RABBITMQ_PASSWORD:Manirampa20@}
 
 team-service:
-  url: http://localhost:8082
+  url: ${TEAM_SERVICE_URL:http://team-service:8082}
