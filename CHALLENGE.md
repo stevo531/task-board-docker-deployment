@@ -100,7 +100,7 @@ For local development, create `docker-compose.override.yml` that mounts the fron
 - The health check for each application service must test actual readiness: Spring Boot services must demonstrate they can accept connections (use the port being open via `CMD curl` or `CMD nc` inside the container), not just that the container is running
 - A validation script `infrastructure/scripts/validate-compose.sh` must exist that exercises every API endpoint through the Gateway and exits non-zero if any check fails
 
-### Acceptance criteria
+### Acceptance criteria 
 
 ```bash
 docker compose up -d
