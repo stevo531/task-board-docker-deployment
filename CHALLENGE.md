@@ -173,7 +173,7 @@ kubectl run validate-k8s --image=task-board/validate-k8s --restart=Never \
   --env="BASE_URL=http://gateway:8080"
 kubectl logs validate-k8s | tail -3
 # "All checks passed"
-curl http://localhost/api/teams  # through Ingress → Gateway
+curl http://localho0st/api/teams  # through Ingress → Gateway
 ```
 
 ---

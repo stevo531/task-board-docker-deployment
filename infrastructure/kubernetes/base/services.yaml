@@ -36,19 +36,37 @@ spec:
           ports:
             - containerPort: 8080
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
             - name: TASK_SERVICE_URL
               value: "http://task-service:8081"
             - name: TEAM_SERVICE_URL
               value: "http://team-service:8082"
             - name: NOTIFICATION_SERVICE_URL
               value: "http://notification-service:8083"
+          startupProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
-              memory: "180Mi"
-              cpu: "150m"
+              memory: "256Mi"
+              cpu: "250m"
             limits:
-              memory: "300Mi"
-              cpu: "500m"
+              memory: "512Mi"
+              cpu: "1000m"
 
 ---
 # ==========================================
@@ -89,27 +107,45 @@ spec:
           ports:
             - containerPort: 8081
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql:3306/taskdb"
+              value: "jdbc:mysql://mysql:3306/taskdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
             - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: MYSQL_USER
+              value: "taskuser"
             - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: MYSQL_PASSWORD
+              value: "Manirampa20@"
             - name: RABBITMQ_HOST
               value: "rabbitmq"
+            - name: RABBITMQ_USERNAME
+              value: "taskuser"
+            - name: RABBITMQ_PASSWORD
+              value: "Manirampa20@"
+            - name: TEAM_SERVICE_URL
+              value: "http://team-service:8082"
+          startupProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 40
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
-              memory: "180Mi"
-              cpu: "150m"
+              memory: "256Mi"
+              cpu: "250m"
             limits:
-              memory: "300Mi"
-              cpu: "500m"
+              memory: "512Mi"
+              cpu: "1000m"
 
 ---
 # ==========================================
@@ -150,25 +186,37 @@ spec:
           ports:
             - containerPort: 8082
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql:3306/teamdb"
+              value: "jdbc:mysql://mysql:3306/teamdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
             - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: MYSQL_USER
+              value: "taskuser"
             - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: MYSQL_PASSWORD
+              value: "Manirampa20@"
+          startupProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 8082
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8082
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
-              memory: "180Mi"
-              cpu: "150m"
+              memory: "256Mi"
+              cpu: "250m"
             limits:
-              memory: "300Mi"
-              cpu: "500m"
+              memory: "512Mi"
+              cpu: "1000m"
 
 ---
 # ==========================================
@@ -209,27 +257,43 @@ spec:
           ports:
             - containerPort: 8083
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://mysql:3306/notificationdb"
+              value: "jdbc:mysql://mysql:3306/notificationdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
             - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: MYSQL_USER
+              value: "taskuser"
             - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: MYSQL_PASSWORD
+              value: "Manirampa20@"
             - name: RABBITMQ_HOST
               value: "rabbitmq"
+            - name: RABBITMQ_USERNAME
+              value: "taskuser"
+            - name: RABBITMQ_PASSWORD
+              value: "Manirampa20@"
+          startupProbe:
+            tcpSocket:
+              port: 8083
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: 8083
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8083
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
-              memory: "180Mi"
-              cpu: "150m"
+              memory: "256Mi"
+              cpu: "250m"
             limits:
-              memory: "300Mi"
-              cpu: "500m"
+              memory: "512Mi"
+              cpu: "1000m"
 
 ---
 # ==========================================
@@ -269,6 +333,22 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
+          startupProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 10
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 1
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               memory: "64Mi"
