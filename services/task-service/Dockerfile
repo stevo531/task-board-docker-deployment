@@ -16,7 +16,7 @@ RUN java -Djarmode=layertools -jar /build/services/task-service/target/*.jar ext
 
 # ADDED java.desktop TO THE --add-modules LIST BELOW:
 RUN $JAVA_HOME/bin/jlink \
-    --add-modules java.base,java.logging,java.net.http,java.sql,java.management,java.naming,java.security.jgss,java.instrument,java.desktop \
+    --add-modules java.base,java.logging,java.net.http,java.sql,java.management,java.naming,java.security.jgss,java.instrument,java.desktop,jdk.unsupported \
     --strip-debug \
     --no-man-pages \
     --no-header-files \
