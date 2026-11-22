@@ -6,7 +6,12 @@ networks:
 
 volumes:
   mysql_data:
+    external: true
+    name: mysql-data
+
   rabbitmq_data:
+    external: true
+    name: 626020f8898452befa75673c15afe42df11fb40bda37dac8432169ebcaa0ada2
 
 services:
   # ==========================================
